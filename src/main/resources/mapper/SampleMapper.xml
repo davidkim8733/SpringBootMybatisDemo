@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dkEnt.sample.mybatis.mapper.SampleMapper">
+ 
+  <resultMap id="BaseResultMap" type="com.dkEnt.sample.model.SampleModel">
+    <result column="name" property="id" />
+    <result column="urls" property="content" />
+  </resultMap>
+ 
+  <select id="sampleSelect" resultMap="BaseResultMap">
+   
+    select name, urls from onj
+  </select>
+ 
+</mapper>

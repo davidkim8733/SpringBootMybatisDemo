@@ -17,35 +17,31 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 
 import com.dkEnt.sample.configure.TomcatPoolDataSourceProperties;
+import com.dkEnt.sample.configure.UserSecurityInterceptor;
 import com.mangofactory.swagger.plugin.EnableSwagger;
 
 @Configuration
-@EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class )
+@EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class)
 @EnableConfigurationProperties(TomcatPoolDataSourceProperties.class)
 @ComponentScan
 @EnableSwagger
 @MapperScan("com.dkEnt.sample.mybatis.mapper")
 public class Application {
-	
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
-    
-    
+
 	@Autowired
 	private TomcatPoolDataSourceProperties tomcatPoolDataSourceProperties;
 
 	private org.apache.tomcat.jdbc.pool.DataSource pool;
-	
+
 	@Bean(destroyMethod = "close")
 	public DataSource dataSource() {
-		
+
 		TomcatPoolDataSourceProperties config = tomcatPoolDataSourceProperties;
-		
+
 		this.pool = new org.apache.tomcat.jdbc.pool.DataSource();
-		
 		this.pool.setDriverClassName(config.getDriverClassName());
 		this.pool.setUrl(config.getUrl());
 		if (config.getUsername() != null) {
@@ -70,22 +66,35 @@ public class Application {
 			this.pool.close();
 		}
 	}
-	
+
 	@Bean
 	public SqlSessionFactory sqlSessionFactoryBean() throws Exception {
-		
+
 		SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
 		sqlSessionFactoryBean.setDataSource(dataSource());
-		
-		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-		sqlSessionFactoryBean
-			.setMapperLocations(resolver.getResources("classpath:/mapper/*.xml"));
 
-		 return sqlSessionFactoryBean.getObject();
+		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+
+		sqlSessionFactoryBean.setMapperLocations(resolver
+				.getResources("classpath:/mapper/*.xml"));
+
+		return sqlSessionFactoryBean.getObject();
 	}
-	
+
 	@Bean
 	public PlatformTransactionManager transactionManager() {
 		return new DataSourceTransactionManager(dataSource());
 	}
+
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(new UserSecurityInterceptor());
+	}
+
+
+	public static void main(String[] args) {
+		SpringApplication.run(new Object[] { Application.class }, args);
+
+	}
+	
+
 }
