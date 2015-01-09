@@ -1,9 +1,12 @@
 package com.dkEnt.sample.mybatis.mapper;
 
-import com.dkEnt.sample.login.model.LoginSuccess;
+import java.util.List;
+
+import com.dkEnt.sample.model.SampleModel;
 
 public interface SampleMapper {
 
-		LoginSuccess sampleSelect();
+
+		List<SampleModel> sampleSelect();
 
 }

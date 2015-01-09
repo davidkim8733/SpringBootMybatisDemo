@@ -1,6 +1,6 @@
-package com.dkEnt.sample.login.model;
+package com.dkEnt.sample.model;
 
-public class LoginSuccess {
+public class SampleModel {
 
 	private String id;
 	private String content;
